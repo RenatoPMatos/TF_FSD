@@ -92,8 +92,8 @@ module NanoCPU
       end
    endgenerate
 
-   assign addReg   = IR[1:0]; // Atividade 1 - banco de registradores: mux ausente (IR[1:0] em LD, senão IR[9:8])
-   assign muxRegIn = dataR;   // Atividade 1 - banco de registradores: mux ausente (dataR em LD, senão outalu)
+   assign addReg   = (EA == LD) ? IR[1:0], IR[9:8];
+   assign muxRegIn = (EA == LD) ? dataR, otalu;   
 
    assign RS1 = reg_bank[IR[5:4]];    // reg bank output multiplexers
    assign RS2 = reg_bank[IR[1:0]];
