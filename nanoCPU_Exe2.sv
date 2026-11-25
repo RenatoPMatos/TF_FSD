@@ -134,7 +134,9 @@ module NanoCPU
             EXEC:    case (inst)
                         iEND:               EA <= fim;
                         iREAD, iREAD_IND:   EA <= LD;
-                        // Atividade 2 - máquina de estados: iWRITE/iWRITE_IND, iJMP e iBRANCH
+                        iWRITE, iWRITE_IND: EA <= WRITE;
+                        iJMP:               EA <= JMP;
+                        iBranch:            EA <= BRANCH;
                         default:            EA <= ALU;
                      endcase
             fim:     EA <= fim;
