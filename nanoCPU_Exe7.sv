@@ -83,8 +83,7 @@ module NanoCPU
    assign address = (EA==FETCH)  ? PC :
                     (inst==iREAD_IND || inst==iWRITE_IND) ? RS1[7:0] : IR[11:4];
    assign ce = 1'b1;
-   assign we = (EA == WRITE) ? '4h1 : '4h0;
-
+assign we = (EA == WRITE) ? 1'b1 : 1'b0;
    // register bank - 4 general purpose registers
    generate
       for (genvar i = 0; i < 4; i++) begin
@@ -93,8 +92,8 @@ module NanoCPU
       end
    endgenerate
 
-   assign addReg   = IR[1:0];
-   assign muxRegIn = dataR;
+   assign addReg   = (EA == LD) ? IR[1:0]: IR[9:8];
+   assign muxRegIn = (EA == LD) ? dataR: outalu;   
 
    assign RS1 = reg_bank[IR[5:4]];    // reg bank output multiplexers
    assign RS2 = reg_bank[IR[1:0]];
@@ -103,11 +102,11 @@ module NanoCPU
    always_comb begin
       case (inst)
          iWRITE, iWRITE_IND: outalu = RS2;  // data to be written is the second register
-         iXOR: otalu = RS1 ^ RS2;
-         iSUB: otalu = RS1 - RS2;
+         iXOR: outalu = RS1 ^ RS2;
+         iSUB: outalu = RS1 - RS2;
          iLESS: outalu = (RS1 < RS2) ? 'h01 : 'h00;
-         iINC: otalu = (RS1 + 'h01);
-         iDEC: otalu = (RS1 - 'h01);         
+         iINC: outalu = (RS1 + 'h01);
+         iDEC: outalu = (RS1 - 'h01);         
          default: outalu = RS1 + RS2;
       endcase
    end
@@ -139,7 +138,7 @@ assign muxPC = ((EA == JMP) || (EA == BRANCH && RS2[0])) ? IR[11:4] : PC + 1;
                         iREAD, iREAD_IND:   EA <= LD;
                         iWRITE, iWRITE_IND: EA <= WRITE;
                         iJMP:               EA <= JMP;
-                        iBranch:            EA <= BRANCH;
+                        iBRANCH:            EA <= BRANCH;
                         default:            EA <= ALU;
                      endcase
             fim:     EA <= fim;

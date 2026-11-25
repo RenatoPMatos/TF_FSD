@@ -92,8 +92,8 @@ module NanoCPU
       end
    endgenerate
 
-   assign addReg   = IR[1:0]; // Atividade 1 - banco de registradores: mux ausente (IR[1:0] em LD, senão IR[9:8])
-   assign muxRegIn = dataR;   // Atividade 1 - banco de registradores: mux ausente (dataR em LD, senão outalu)
+   assign addReg   = (EA == LD) ? IR[1:0]: IR[9:8];
+   assign muxRegIn = (EA == LD) ? dataR: outalu;   
 
    assign RS1 = reg_bank[IR[5:4]];    // reg bank output multiplexers
    assign RS2 = reg_bank[IR[1:0]];
@@ -102,8 +102,8 @@ module NanoCPU
    always_comb begin
       case (inst)
          iWRITE, iWRITE_IND: outalu = RS2;  // data to be written is the second register
-         iXOR: otalu = RS1 ^ RS2;
-         iSUB: otalu = RS1 - RS2;
+         iXOR: outalu = RS1 ^ RS2;
+         iSUB: outalu = RS1 - RS2;
          iLESS: outalu = (RS1 < RS2) ? 16'd1 : 16'd0;
          // Atividade 7 - INC e DEC: incluir as operações de incremento e decremento
          default: outalu = RS1 + RS2;
@@ -138,7 +138,7 @@ module NanoCPU
                         iREAD, iREAD_IND:   EA <= LD;
                         iWRITE, iWRITE_IND: EA <= WRITE;
                         iJMP:               EA <= JMP;
-                        iBranch:            EA <= BRANCH;
+                        iBRANCH:            EA <= BRANCH;
                         default:            EA <= ALU;
                      endcase
             fim:     EA <= fim;

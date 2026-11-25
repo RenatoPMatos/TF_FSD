@@ -42,6 +42,7 @@ module nanoCPU_TB;
      32: 'h3333,
      33: 'h4444,
     255: 'h2140,   // jump incondicional para 20
+    default: 'h0000
   };
 
   initial memory = memoryB;  // program to load into the memory

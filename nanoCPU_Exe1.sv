@@ -92,8 +92,8 @@ module NanoCPU
       end
    endgenerate
 
-   assign addReg   = (EA == LD) ? IR[1:0], IR[9:8];
-   assign muxRegIn = (EA == LD) ? dataR, otalu;   
+   assign addReg   = (EA == LD) ? IR[1:0]: IR[9:8];
+   assign muxRegIn = (EA == LD) ? dataR: outalu;   
 
    assign RS1 = reg_bank[IR[5:4]];    // reg bank output multiplexers
    assign RS2 = reg_bank[IR[1:0]];
